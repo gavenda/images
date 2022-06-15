@@ -9,5 +9,22 @@ api-version: '1.13'
 commands:
   image:
     description: 'Manage custom images.'
-    usage: '/<command> [create|delete|list|import]'
-    aliases: [ 'customimage', 'images', 'img' ]
+    usage: /<command> <create|delete|list|upload>
+    aliases: [ img ]
+permissions:
+  images.*:
+    description: Gives access to all image commands.
+    children:
+      images.command.*: true
+  images.command.manage:
+    default: op
+  images.command.create:
+    default: true
+  images.command.delete:
+    default: true
+  images.command.delete.file:
+    default: true
+  images.command.delete.near:
+    default: true
+  images.command.upload:
+    default: true

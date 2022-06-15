@@ -3,6 +3,7 @@ package com.andavin.images.command;
 import com.andavin.images.Images;
 import com.andavin.images.image.CustomImage;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -54,7 +55,7 @@ final class DeleteNearCommand extends BaseCommand {
         }
 
         if (success == images.size()) {
-            player.sendMessage("§aSuccessfully deleted §f" + success + "§a images within §f" + range + " blocks");
+            player.sendMessage("§eSuccessfully deleted §f" + success + "§e images within §f" + range + " blocks");
         } else {
 
             player.sendMessage("§cFound §f" + images.size() + "§c nearby images");
@@ -63,6 +64,13 @@ final class DeleteNearCommand extends BaseCommand {
             } else {
                 player.sendMessage("§cbut there was an issue deleting them");
             }
+        }
+    }
+
+    @Override
+    public void tabComplete(CommandSender sender, String[] args, List<String> completions) {
+        if (args.length == 1) {
+            completions.add("<range>");
         }
     }
 }

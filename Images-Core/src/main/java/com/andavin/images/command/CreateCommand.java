@@ -26,7 +26,6 @@ package com.andavin.images.command;
 import com.andavin.images.Images;
 import com.andavin.images.image.CustomImage;
 import com.andavin.util.*;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -37,6 +36,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.StringUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -69,7 +69,7 @@ final class CreateCommand extends BaseCommand implements Listener {
         super("create", "images.command.create");
         this.setAliases("new", "add", "load");
         this.setMinimumArgs(1);
-        this.setUsage("/image create <image name> [scale percent]");
+        this.setUsage("/image create <image name> <scale percent>");
         this.setDesc("Create and begin pasting a new custom image");
         Bukkit.getPluginManager().registerEvents(this, Images.getInstance());
     }
@@ -119,7 +119,7 @@ final class CreateCommand extends BaseCommand implements Listener {
         UUID id = player.getUniqueId();
         this.creating.put(id, new CreateImageTask(scale, imageSupplier, nameSupplier));
         Scheduler.repeatAsyncWhile(() -> ActionBarUtil.sendActionBar(player,
-                "§eRight Click to place§7 - §eLeft Click to cancel"),
+                "RMB to place, LMB to cancel"),
                 5L, 20L, () -> this.creating.containsKey(id));
     }
 
@@ -131,10 +131,13 @@ final class CreateCommand extends BaseCommand implements Listener {
             Images.getImageFiles().forEach(file -> {
 
                 String name = file.getName();
-                if (StringUtils.startsWithIgnoreCase(name, args[0])) {
+                if (StringUtil.startsWithIgnoreCase(name, args[0])) {
                     completions.add(name.replace(' ', '_'));
                 }
             });
+        }
+        if (args.length == 2) {
+            completions.add("<scale percent>");
         }
     }
 
@@ -192,7 +195,7 @@ final class CreateCommand extends BaseCommand implements Listener {
 
                 Scheduler.async(() -> {
 
-                    player.sendMessage("§aStarting image paste");
+                    player.sendMessage("§eStarting image paste");
                     BufferedImage image = task.readImage();
                     if (image == null) {
                         player.sendMessage("§cInvalid image file! Please choose another.");
@@ -203,7 +206,7 @@ final class CreateCommand extends BaseCommand implements Listener {
                             task.nameSupplier.get(), location, direction, image);
                     customImage.refresh(player, playerLocation);
                     if (Images.addImage(customImage)) {
-                        player.sendMessage("§aSuccessfully created image§f " + customImage.getImageName());
+                        player.sendMessage("§eSuccessfully created image§f " + customImage.getImageName());
                     } else {
                         player.sendMessage("§cFailed to create image at that location");
                     }

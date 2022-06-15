@@ -68,7 +68,7 @@ public final class LegacyImportManager {
         File dataFile = new File(imageFolder, "data.yml");
         if (!dataFile.exists()) {
             throw new IllegalStateException("§cNo legacy data file exists.\n" +
-                    "§aThe§f data.yml§c file must be in the Images directory");
+                    "§eThe§f data.yml§c file must be in the Images directory");
         }
 
         LegacyImage.dataFolder = imageFolder;

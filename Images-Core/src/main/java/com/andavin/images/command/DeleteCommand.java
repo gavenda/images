@@ -56,6 +56,7 @@ final class DeleteCommand extends BaseCommand implements Listener {
         this.setUsage("/image delete");
         this.setDesc("Delete an existing image by clicking on it");
         this.addChild(new DeleteNearCommand());
+        this.addChild(new DeleteFileCommand());
         Bukkit.getPluginManager().registerEvents(this, Images.getInstance());
     }
 
@@ -71,9 +72,9 @@ final class DeleteCommand extends BaseCommand implements Listener {
         Scheduler.repeatAsyncWhile(() -> {
 
             if (MinecraftVersion.lessThan(v1_15)) {
-                ActionBarUtil.sendActionBar(player, "§eRight Click to delete§7 - §eLeft Click to cancel");
+                ActionBarUtil.sendActionBar(player, "RMB to delete, LMB to cancel");
             } else {
-                ActionBarUtil.sendActionBar(player, "§eRight Click to delete§7 - §eRerun Command to cancel");
+                ActionBarUtil.sendActionBar(player, "RMB to delete, re-run command to cancel");
             }
         }, 5L, 20L, () -> this.deleting.contains(id));
 
@@ -95,7 +96,7 @@ final class DeleteCommand extends BaseCommand implements Listener {
 
                     if (this.deleting.remove(player.getUniqueId()) && Images.removeImage(image)) {
                         image.destroy();
-                        player.sendMessage("§aImage successfully deleted");
+                        player.sendMessage("§eImage successfully deleted");
                     } else {
                         player.sendMessage("§cFailed to delete image");
                     }

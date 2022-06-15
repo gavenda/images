@@ -50,7 +50,7 @@ final class ListCommand extends BaseCommand {
     @Override
     public void execute(Player player, String label, String[] args) {
 
-        player.sendMessage("§a§lImage Options");
+        player.sendMessage("§e§lImage Options");
         List<File> images = Images.getImageFiles();
         if (images.isEmpty()) {
             player.sendMessage("§cNo images available");

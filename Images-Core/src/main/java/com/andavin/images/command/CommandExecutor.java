@@ -24,7 +24,6 @@
 package com.andavin.images.command;
 
 import com.andavin.util.Logger;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -53,7 +52,7 @@ final class CommandExecutor extends org.bukkit.command.Command {
             }
 
             if (!cmd.hasPermission(sender, args)) {
-                sender.sendMessage("§cInsufficient permission.");
+                sender.sendMessage("§cInsufficient permission");
                 return true;
             }
 
@@ -112,7 +111,7 @@ final class CommandExecutor extends org.bukkit.command.Command {
      * with the given arguments. Basically getting the last
      * child command that matches the furthest argument in the array.
      *
-     * @param cmd The command to get the child command of.
+     * @param cmd  The command to get the child command of.
      * @param args The arguments given to get the matching children from.
      * @return An executable child command of the given command or the command if there is no children.
      */
@@ -150,7 +149,7 @@ final class CommandExecutor extends org.bukkit.command.Command {
      * { doTest, tests }.
      *
      * @param child The child command to match.
-     * @param args The arguments to trim.
+     * @param args  The arguments to trim.
      * @return A trimmed argument array.
      */
     private String[] trimArgs(BaseCommand child, String[] args) {
@@ -158,13 +157,17 @@ final class CommandExecutor extends org.bukkit.command.Command {
         for (int i = 0; i < args.length; ++i) {
 
             if (args[i].equalsIgnoreCase(child.getName())) {
-                return (String[]) ArrayUtils.subarray(args, i + 1, args.length);
+                return Arrays
+                        .stream(args, i + 1, args.length)
+                        .toArray(String[]::new);
             }
 
             for (String alias : child.getAliases()) {
 
                 if (args[i].equalsIgnoreCase(alias)) {
-                    return (String[]) ArrayUtils.subarray(args, i + 1, args.length);
+                    return Arrays
+                            .stream(args, i + 1, args.length)
+                            .toArray(String[]::new);
                 }
             }
         }

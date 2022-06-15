@@ -23,7 +23,6 @@
  */
 package com.andavin.util;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
@@ -95,14 +94,14 @@ public final class StringUtil {
      * A single string with proper line break characters will
      * be input into the string at the correct points.
      *
-     * @param str The string to split for the book.
+     * @param str    The string to split for the book.
      * @param center If each of the lines should be centered.
-     * @param color The color to place before each line.
+     * @param color  The color to place before each line.
      * @return The text for the book with line breaks.
      */
     public static String splitForBook(String str, boolean center, ChatColor color) {
 
-        String[] strings = StringUtils.split(str, '\n');
+        String[] strings = str.split("\n");
         List<String> lines = new LinkedList<>();
         for (String string : strings) {
 
@@ -154,7 +153,7 @@ public final class StringUtil {
             }
         }
 
-        return StringUtils.join(lines, '\n');
+        return String.join("\n", lines);
     }
 
     /**
@@ -237,7 +236,7 @@ public final class StringUtil {
      * Center the given string given a base that represents
      * the longest string to center off of.
      *
-     * @param str The string to center.
+     * @param str  The string to center.
      * @param base The base length to center off of.
      * @return The centered form of the string.
      */

@@ -77,7 +77,7 @@ public abstract class BaseCommand {
      * @param args The arguments given by the sender.
      */
     public void execute(CommandSender sender, String label, String[] args) {
-        sender.sendMessage("Sorry, /" + this.name + " is player only.");
+        sender.sendMessage("Sorry, /" + this.name + " is player only");
     }
 
     /**

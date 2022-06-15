@@ -39,16 +39,13 @@ public class ImageCommand extends BaseCommand {
 
     ImageCommand() {
         super("image", "images.command.manage");
-        this.setAliases("customimage", "images", "img");
+        this.setAliases("img");
         this.setDesc("Manage custom images.");
-        this.setUsage("/image [create|delete|list|import|transfer]");
+        this.setUsage("/image <create|delete|list|upload>");
         this.addChild(new CreateCommand());
         this.addChild(new DeleteCommand());
         this.addChild(new ListCommand());
-        this.addChild(new ImportCommand());
-        this.addChild(new TransferCommand());
-//        this.addChild(new SizeCommand());
-//        this.addChild(new ResizeCommand());
+        this.addChild(new UploadCommand());
     }
 
     @Override
@@ -61,7 +58,7 @@ public class ImageCommand extends BaseCommand {
         for (BaseCommand command : new HashSet<>(this.getChildren().values())) {
             player.spigot().sendMessage(new ComponentBuilder("§e§l" + command.getUsage())
                     .event(new HoverEvent(Action.SHOW_TEXT, new ComponentBuilder(
-                            "§a" + command.getDescription()).create()))
+                            "§e" + command.getDescription()).create()))
                     .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command.getUsage())).create());
         }
     }
