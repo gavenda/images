@@ -69,7 +69,7 @@ final class DeleteCommand extends BaseCommand implements Listener {
 
         UUID id = player.getUniqueId();
         this.deleting.add(id);
-        Scheduler.repeatAsyncWhile(() -> {
+        Scheduler.repeatAsyncWhile((task) -> {
 
             if (MinecraftVersion.lessThan(v1_15)) {
                 ActionBarUtil.sendActionBar(player, "RMB to delete, LMB to cancel");
@@ -92,7 +92,7 @@ final class DeleteCommand extends BaseCommand implements Listener {
 
             if (action == InteractType.RIGHT_CLICK) {
 
-                Scheduler.async(() -> {
+                Scheduler.async((task) -> {
 
                     if (this.deleting.remove(player.getUniqueId()) && Images.removeImage(image)) {
                         image.destroy();

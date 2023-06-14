@@ -25,8 +25,6 @@ package com.andavin.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,7 +34,7 @@ import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
 /**
- * A class to make using the {@link BukkitScheduler} less
+ * A class to make using the {@link io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler} less
  * cumbersome and easier to use. Also, allows for easy
  * {@code do-while} loops and similar condition based looping
  * in timed loop tasks.
@@ -51,74 +49,74 @@ public final class Scheduler {
 
     /**
      * Run a task synchronously on the main thread using
-     * the {@link BukkitScheduler}.
+     * the {@link io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler}.
      *
-     * @param run The {@link Runnable} to execute.
-     * @return The {@link BukkitTask} that is returned after registering the task.
+     * @param run The {@link Consumer<FoliaScheduledTask>} to execute.
+     * @return The {@link FoliaScheduledTask} that is returned after registering the task.
      */
-    public static BukkitTask sync(Runnable run) {
-        return Bukkit.getScheduler().runTask(instance, run);
+    public static FoliaScheduledTask sync(Consumer<FoliaScheduledTask> run) {
+        return FoliaScheduledTask.wrap(Bukkit.getGlobalRegionScheduler().run(instance, (t) -> run.accept(FoliaScheduledTask.wrap(t))));
     }
 
     /**
      * Run a task asynchronously on a separate thread using
-     * the {@link BukkitScheduler}.
+     * the {@link io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler}.
      *
-     * @param run The {@link Runnable} to execute.
-     * @return The {@link BukkitTask} that is returned after registering the task.
+     * @param run The {@link Consumer<FoliaScheduledTask>} to execute.
+     * @return The {@link FoliaScheduledTask} that is returned after registering the task.
      */
-    public static BukkitTask async(Runnable run) {
-        return Bukkit.getScheduler().runTaskAsynchronously(instance, run);
+    public static FoliaScheduledTask async(Consumer<FoliaScheduledTask> run) {
+        return FoliaScheduledTask.wrap(Bukkit.getAsyncScheduler().runNow(instance, (t) -> run.accept(FoliaScheduledTask.wrap(t))));
     }
 
     /**
      * Run a task synchronously after a specified amount of
-     * ticks using the {@link BukkitScheduler}.
+     * ticks using the {@link io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler}.
      *
-     * @param run The {@link Runnable} task to execute.
+     * @param run   The {@link Consumer<FoliaScheduledTask>} task to execute.
      * @param delay The ticks (1 tick = 50 milliseconds, 20 ticks = 1 second) after which to run the task.
-     * @return The {@link BukkitTask} that is returned after registering the task.
+     * @return The {@link FoliaScheduledTask} that is returned after registering the task.
      */
-    public static BukkitTask later(Runnable run, long delay) {
-        return Bukkit.getScheduler().runTaskLater(instance, run, delay);
+    public static FoliaScheduledTask later(Consumer<FoliaScheduledTask> run, long delay) {
+        return FoliaScheduledTask.wrap(Bukkit.getGlobalRegionScheduler().runDelayed(instance, (t) -> run.accept(FoliaScheduledTask.wrap(t)), delay));
     }
 
     /**
      * Run a task asynchronously after a specified amount of
-     * ticks using the {@link BukkitScheduler}.
+     * ticks using the {@link io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler}.
      *
-     * @param run The {@link Runnable} task to execute.
+     * @param run   The {@link Consumer<FoliaScheduledTask>} task to execute.
      * @param delay The ticks (1 tick = 50 milliseconds, 20 ticks = 1 second) after which to run the task.
-     * @return The {@link BukkitTask} that is returned after registering the task.
+     * @return The {@link FoliaScheduledTask} that is returned after registering the task.
      */
-    public static BukkitTask laterAsync(Runnable run, long delay) {
-        return Bukkit.getScheduler().runTaskLaterAsynchronously(instance, run, delay);
+    public static FoliaScheduledTask laterAsync(Consumer<FoliaScheduledTask> run, long delay) {
+        return FoliaScheduledTask.wrap(Bukkit.getAsyncScheduler().runDelayed(instance, (t) -> run.accept(FoliaScheduledTask.wrap(t)), delay * 50, TimeUnit.MILLISECONDS));
     }
 
     /**
      * Run a task synchronously repeatedly after a specified amount
      * of ticks and repeated every period ticks until cancelled.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
+     * @param run    The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay  The delay in ticks before the first run of the task.
      * @param period The period in ticks to wait until running again after each run.
-     * @return The {@link BukkitTask} that is returned after registering the task.
+     * @return The {@link FoliaScheduledTask} that is returned after registering the task.
      */
-    public static BukkitTask repeat(Runnable run, long delay, long period) {
-        return Bukkit.getScheduler().runTaskTimer(instance, run, delay, period);
+    public static FoliaScheduledTask repeat(Consumer<FoliaScheduledTask> run, long delay, long period) {
+        return FoliaScheduledTask.wrap(Bukkit.getGlobalRegionScheduler().runAtFixedRate(instance, (t) -> run.accept(FoliaScheduledTask.wrap(t)), delay, period));
     }
 
     /**
      * Run a task asynchronously repeatedly after a specified amount
      * of ticks and repeated every period ticks until canceled.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
+     * @param run    The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay  The delay in ticks before the first run of the task.
      * @param period The period in ticks to wait until running again after each run.
-     * @return The {@link BukkitTask} that is returned after registering the task.
+     * @return The {@link FoliaScheduledTask} that is returned after registering the task.
      */
-    public static BukkitTask repeatAsync(Runnable run, long delay, long period) {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(instance, run, delay, period);
+    public static FoliaScheduledTask repeatAsync(Consumer<FoliaScheduledTask> run, long delay, long period) {
+        return FoliaScheduledTask.wrap(Bukkit.getAsyncScheduler().runAtFixedRate(instance, (t) -> run.accept(FoliaScheduledTask.wrap(t)), delay * 50, period, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -130,14 +128,14 @@ public final class Scheduler {
      * or by the time that {@code delay} has elapsed, then the task will
      * never be executed and will immediately be cancelled on the first run.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
+     * @param run    The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay  The delay in ticks before the first run of the task.
      * @param period The period in ticks to wait until running again after each run.
-     * @param until The {@link Supplier} to test when to cancel. When this is
-     *              {@code true} the task will be cancelled.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @param until  The {@link Supplier} to test when to cancel. When this is
+     *               {@code true} the task will be cancelled.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatUntil(Runnable run, long delay, long period, BooleanSupplier until) {
+    public static FoliaScheduledTask repeatUntil(Consumer<FoliaScheduledTask> run, long delay, long period, BooleanSupplier until) {
         return repeatWhile(run, delay, period, () -> !until.getAsBoolean());
     }
 
@@ -150,14 +148,14 @@ public final class Scheduler {
      * or by the time that {@code delay} has elapsed, then the task will
      * never be executed and will immediately be cancelled on the first run.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
+     * @param run    The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay  The delay in ticks before the first run of the task.
      * @param period The period in ticks to wait until running again after each run.
-     * @param until The {@link Supplier} to test when to cancel.
-     *         When this returns {@code true} the task will be cancelled.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @param until  The {@link Supplier} to test when to cancel.
+     *               When this returns {@code true} the task will be cancelled.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatAsyncUntil(Runnable run, long delay, long period, BooleanSupplier until) {
+    public static FoliaScheduledTask repeatAsyncUntil(Consumer<FoliaScheduledTask> run, long delay, long period, BooleanSupplier until) {
         return repeatAsyncWhile(run, delay, period, () -> !until.getAsBoolean());
     }
 
@@ -171,18 +169,18 @@ public final class Scheduler {
      * that {@code delay} has elapsed, then the task will never be executed and
      * will immediately be cancelled on the first run.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
-     * @param period The period in ticks to wait until running again after each run.
+     * @param run       The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay     The delay in ticks before the first run of the task.
+     * @param period    The period in ticks to wait until running again after each run.
      * @param condition The {@link Supplier condition} that must be {@code true}
      *                  in order for the task to continue to run.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatWhile(Runnable run, long delay, long period, BooleanSupplier condition) {
+    public static FoliaScheduledTask repeatWhile(Consumer<FoliaScheduledTask> run, long delay, long period, BooleanSupplier condition) {
         Task task = new Task(run, condition);
-        BukkitTask bukkitTask = repeat(task, delay, period);
-        task.setTask(bukkitTask);
-        return bukkitTask;
+        FoliaScheduledTask FoliaScheduledTask = repeat(task, delay, period);
+        task.setTask(FoliaScheduledTask);
+        return FoliaScheduledTask;
     }
 
     /**
@@ -195,18 +193,18 @@ public final class Scheduler {
      * that {@code delay} has elapsed, then the task will never be executed and
      * will immediately be cancelled on the first run.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
-     * @param period The period in ticks to wait until running again after each run.
+     * @param run       The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay     The delay in ticks before the first run of the task.
+     * @param period    The period in ticks to wait until running again after each run.
      * @param condition The {@link Supplier condition} that must be {@code true}
      *                  in order for the task to continue to run.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatAsyncWhile(Runnable run, long delay, long period, BooleanSupplier condition) {
+    public static FoliaScheduledTask repeatAsyncWhile(Consumer<FoliaScheduledTask> run, long delay, long period, BooleanSupplier condition) {
         Task task = new Task(run, condition);
-        BukkitTask bukkitTask = repeatAsync(task, delay, period);
-        task.setTask(bukkitTask);
-        return bukkitTask;
+        FoliaScheduledTask FoliaScheduledTask = repeatAsync(task, delay, period);
+        task.setTask(FoliaScheduledTask);
+        return FoliaScheduledTask;
     }
 
     /**
@@ -216,21 +214,21 @@ public final class Scheduler {
      * This is, conditionally, almost identical to a {@code fori} loop:
      * <pre>
      *     for (int i = 0; i &lt; count; i++) {
-     *         // The runnable contents
+     *         // The Consumer<FoliaScheduledTask> contents
      *     }
      * </pre>
      *
      * @param consumer The {@link Consumer task} to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
-     * @param period The period in ticks to wait until running again after each run.
-     * @param count The amount of executions to allow before cancelling.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @param delay    The delay in ticks before the first run of the task.
+     * @param period   The period in ticks to wait until running again after each run.
+     * @param count    The amount of executions to allow before cancelling.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatFor(IntConsumer consumer, long delay, long period, int count) {
+    public static FoliaScheduledTask repeatFor(IntConsumer consumer, long delay, long period, int count) {
         Task task = new IncrementTask(consumer, count);
-        BukkitTask bukkitTask = repeat(task, delay, period);
-        task.setTask(bukkitTask);
-        return bukkitTask;
+        FoliaScheduledTask FoliaScheduledTask = repeat(task, delay, period);
+        task.setTask(FoliaScheduledTask);
+        return FoliaScheduledTask;
     }
 
     /**
@@ -240,21 +238,21 @@ public final class Scheduler {
      * This is, conditionally, almost identical to a {@code fori} loop:
      * <pre>
      *     for (int i = 0; i &lt; count; i++) {
-     *         // The runnable contents
+     *         // The Consumer<FoliaScheduledTask> contents
      *     }
      * </pre>
      *
      * @param consumer The {@link Consumer task} to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
-     * @param period The period in ticks to wait until running again after each run.
-     * @param count The amount of executions to allow before cancelling.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @param delay    The delay in ticks before the first run of the task.
+     * @param period   The period in ticks to wait until running again after each run.
+     * @param count    The amount of executions to allow before cancelling.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatAsyncFor(IntConsumer consumer, long delay, long period, int count) {
+    public static FoliaScheduledTask repeatAsyncFor(IntConsumer consumer, long delay, long period, int count) {
         Task task = new IncrementTask(consumer, count);
-        BukkitTask bukkitTask = repeatAsync(task, delay, period);
-        task.setTask(bukkitTask);
-        return bukkitTask;
+        FoliaScheduledTask FoliaScheduledTask = repeatAsync(task, delay, period);
+        task.setTask(FoliaScheduledTask);
+        return FoliaScheduledTask;
     }
 
     /**
@@ -271,19 +269,19 @@ public final class Scheduler {
      * This would be guaranteed not to exceed 16 executions, though, since TPS
      * will never be above 20.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
-     * @param period The period in ticks to wait until running again after each run.
+     * @param run      The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay    The delay in ticks before the first run of the task.
+     * @param period   The period in ticks to wait until running again after each run.
      * @param duration The amount of {@link TimeUnit units} to run for.
-     * @param unit The {@link TimeUnit} to multiply the duration by.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @param unit     The {@link TimeUnit} to multiply the duration by.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatFor(Runnable run, long delay, long period, long duration, TimeUnit unit) {
+    public static FoliaScheduledTask repeatFor(Consumer<FoliaScheduledTask> run, long delay, long period, long duration, TimeUnit unit) {
         long until = unit.toMillis(duration);
         Task task = new Task(run, () -> System.currentTimeMillis() < until);
-        BukkitTask bukkitTask = repeat(task, delay, period);
-        task.setTask(bukkitTask);
-        return bukkitTask;
+        FoliaScheduledTask FoliaScheduledTask = repeat(task, delay, period);
+        task.setTask(FoliaScheduledTask);
+        return FoliaScheduledTask;
     }
 
     /**
@@ -300,46 +298,45 @@ public final class Scheduler {
      * This would be guaranteed not to exceed 16 executions, though, since TPS
      * will never be above 20.
      *
-     * @param run The {@link Runnable} task to execute every period.
-     * @param delay The delay in ticks before the first run of the task.
-     * @param period The period in ticks to wait until running again after each run.
+     * @param run      The {@link Consumer<FoliaScheduledTask>} task to execute every period.
+     * @param delay    The delay in ticks before the first run of the task.
+     * @param period   The period in ticks to wait until running again after each run.
      * @param duration The amount of {@link TimeUnit units} to run for.
-     * @param unit The {@link TimeUnit} to multiply the duration by.
-     * @return The {@link BukkitTask task} that was scheduled.
+     * @param unit     The {@link TimeUnit} to multiply the duration by.
+     * @return The {@link FoliaScheduledTask task} that was scheduled.
      */
-    public static BukkitTask repeatAsyncFor(Runnable run, long delay, long period, long duration, TimeUnit unit) {
+    public static FoliaScheduledTask repeatAsyncFor(Consumer<FoliaScheduledTask> run, long delay, long period, long duration, TimeUnit unit) {
         long until = unit.toMillis(duration);
         Task task = new Task(run, () -> System.currentTimeMillis() < until);
-        BukkitTask bukkitTask = repeatAsync(task, delay, period);
-        task.setTask(bukkitTask);
-        return bukkitTask;
+        FoliaScheduledTask FoliaScheduledTask = repeatAsync(task, delay, period);
+        task.setTask(FoliaScheduledTask);
+        return FoliaScheduledTask;
     }
 
-    private static class Task implements Runnable {
+    private static class Task implements Consumer<FoliaScheduledTask> {
 
-        BukkitTask task;
+        FoliaScheduledTask task;
         boolean cancelled;
-        private final Runnable runnable;
+        private final Consumer<FoliaScheduledTask> runnable;
         private final BooleanSupplier condition;
 
-        Task(Runnable runnable, BooleanSupplier condition) {
+        Task(Consumer<FoliaScheduledTask> runnable, BooleanSupplier condition) {
             this.runnable = runnable;
             this.condition = condition;
         }
 
         /**
-         * The {@link BukkitTask} that represents the
+         * The {@link FoliaScheduledTask} that represents the
          * task that is being run.
          *
          * @param task The task.
          */
-        final void setTask(BukkitTask task) {
+        final void setTask(FoliaScheduledTask task) {
             this.task = task;
         }
 
         @Override
-        public void run() {
-
+        public void accept(FoliaScheduledTask task) {
             if (this.cancelled) {
 
                 if (this.task != null) {
@@ -350,7 +347,7 @@ public final class Scheduler {
             }
 
             if (this.condition.getAsBoolean()) {
-                this.runnable.run();
+                this.runnable.accept(task);
             } else {
 
                 if (this.task != null) {

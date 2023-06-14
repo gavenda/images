@@ -152,13 +152,13 @@ public class Images extends JavaPlugin implements Listener {
             dataManager.initialize();
         }
 
-        Scheduler.laterAsync(() -> {
+        Scheduler.laterAsync((t) -> {
             IMAGES.addAll(dataManager.load());
             Logger.info("Loaded {} images...", IMAGES.size());
             CommandRegistry.registerCommands();
         }, 40L);
 
-        Scheduler.repeatAsync(() -> {
+        Scheduler.repeatAsync((t) -> {
 
             try {
 
@@ -185,7 +185,7 @@ public class Images extends JavaPlugin implements Listener {
 
         Player player = event.getPlayer();
         Location location = player.getLocation();
-        Scheduler.laterAsync(() -> this.refreshImages(player, location), 20L);
+        Scheduler.laterAsync((t) -> this.refreshImages(player, location), 20L);
         if (protocolLib) {
             return;
         }
@@ -203,7 +203,7 @@ public class Images extends JavaPlugin implements Listener {
     public void onQuit(PlayerQuitEvent event) {
 
         Player player = event.getPlayer();
-        Scheduler.async(() -> {
+        Scheduler.async((task) -> {
 
             CustomImage[] images;
             synchronized (IMAGES) {
@@ -221,7 +221,7 @@ public class Images extends JavaPlugin implements Listener {
 
         Player player = event.getPlayer();
         Location location = event.getRespawnLocation();
-        Scheduler.laterAsync(() -> {
+        Scheduler.laterAsync((t) -> {
 
             CustomImage[] images;
             synchronized (IMAGES) {
@@ -239,7 +239,7 @@ public class Images extends JavaPlugin implements Listener {
     public void onWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         Location location = player.getLocation();
-        Scheduler.laterAsync(() -> this.refreshImages(player, location), 20L);
+        Scheduler.laterAsync((task) -> this.refreshImages(player, location), 20L);
     }
 
     @EventHandler
@@ -253,7 +253,7 @@ public class Images extends JavaPlugin implements Listener {
 
         if (from.getBlockX() >> 4 != to.getBlockX() >> 4 ||
                 from.getBlockZ() >> 4 != to.getBlockZ() >> 4) {
-            Scheduler.async(() -> this.refreshImages(player, to));
+            Scheduler.async((t) -> this.refreshImages(player, to));
         }
     }
 

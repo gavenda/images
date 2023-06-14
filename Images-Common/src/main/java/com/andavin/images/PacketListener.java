@@ -112,7 +112,7 @@ public abstract class PacketListener<T, U> implements Versioned {
             return;
         }
 
-        Scheduler.async(() -> {
+        Scheduler.async((task) -> {
 
             List<CustomImage> images = getImages.get();
             //noinspection SynchronizationOnLocalVariableOrMethodParameter

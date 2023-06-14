@@ -118,7 +118,7 @@ final class CreateCommand extends BaseCommand implements Listener {
 
         UUID id = player.getUniqueId();
         this.creating.put(id, new CreateImageTask(scale, imageSupplier, nameSupplier));
-        Scheduler.repeatAsyncWhile(() -> ActionBarUtil.sendActionBar(player,
+        Scheduler.repeatAsyncWhile((t) -> ActionBarUtil.sendActionBar(player,
                 "RMB to place, LMB to cancel"),
                 5L, 20L, () -> this.creating.containsKey(id));
     }
@@ -193,7 +193,7 @@ final class CreateCommand extends BaseCommand implements Listener {
                     }
                 }
 
-                Scheduler.async(() -> {
+                Scheduler.async((t) -> {
 
                     player.sendMessage("§eStarting image paste");
                     BufferedImage image = task.readImage();
