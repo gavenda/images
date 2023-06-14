@@ -6,11 +6,11 @@
 
     <groupId>com.andavin</groupId>
     <artifactId>images-parent</artifactId>
-    <version>2.2.7-yawa</version>
+    <version>2.3.0-yawa</version>
     <modules>
         <module>Images-Core</module>
         <module>Images-Common</module>
-        <module>Images-v1_19_R1</module>
+        <module>Images-v1_20_R1</module>
     </modules>
     <packaging>pom</packaging>
 
